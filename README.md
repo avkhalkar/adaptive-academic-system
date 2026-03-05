@@ -180,9 +180,3 @@ Team10/
 - **Styling:** Custom CSS with glassmorphism
 
 ---
-
-## 👥 Team
-
-**Team 10** - DevHack 7.0
-
-
