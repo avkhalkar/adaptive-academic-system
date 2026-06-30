@@ -136,13 +136,17 @@ The app will be available at `http://localhost:5173` (check terminal if port var
 4. Copy **Publishable Key** and **Secret Key**
 
 ### MongoDB Atlas (Database - FREE tier)
-1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas)
-2. Sign up and click **Build a Database** → choose **Free (M0)** tier
-3. Pick a cloud provider and region → click **Create**
-4. Set a username and password for your DB user → click **Create User**
-5. Under **Network Access** → **Add IP Address** → enter `0.0.0.0/0` (allow all IPs) → make sure the **temporary** toggle is **off** → click **Confirm**
-6. Go to **Database** → click **Connect** → **Drivers** → copy the connection string
-7. Replace `<password>` with your DB user password and remove the database name from the URI — set `DB_NAME` separately in your `.env`
+1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas) and sign up
+2. Click **Build a Database** → choose **Free (M0)** tier → pick a cloud provider and region → click **Create**
+3. Set a **username** and **password** for your DB user → click **Create User**
+4. Under **Network Access** in the left sidebar → click **Add IP Address**
+   - Enter `0.0.0.0/0` in the Access List Entry field (this allows connections from any IP — fine for development/demo, avoid in production)
+   - Make sure the **"This entry is temporary"** toggle is **OFF**
+   - Click **Confirm**
+5. Go to **Database** in the left sidebar → click **Connect** → **Drivers** → copy the connection string
+6. Your connection string looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net`
+   - Replace `<password>` with your DB user password
+   - Do **not** include the database name in the URI — set it separately as `DB_NAME` in your `.env`
 
 ---
 
@@ -155,21 +159,39 @@ This project is deployed with the **backend on Railway** and the **frontend on V
 1. Go to [railway.app](https://railway.app) and sign in with GitHub
 2. Click **New Project** → **Deploy from GitHub repo** → select this repo
 3. Once the service is created, go to **Settings** → **Source** → click **Add Root Directory** → set it to `/backend`
-4. Under **Settings** → **Deploy** → click **+ Start Command** → set it to `node server.js`
-5. Go to **Variables** and add all backend env vars:
-   - `DB_NAME`, `MONGODB_URI`, `PORT`, `CORS_ORIGIN`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `GROQ_API_KEY`
-   - ⚠️ Do **not** wrap values in quotes — Railway will include them literally
-6. Go to **Settings** → **Networking** → click **Generate Domain** to get your public backend URL
+   > This tells Railway to look inside the `backend/` folder for `package.json` and run all commands from there
+4. Under **Settings** → **Build** → set **Custom Build Command** to `npm install`
+5. Under **Settings** → **Deploy** → click **+ Start Command** → set it to `node server.js`
+   > Use `node` directly, not `nodemon` — nodemon is for development only (file watching has no use in production)
+6. Go to **Variables** and add all backend env vars:
+
+| Variable | Value |
+|----------|-------|
+| `DB_NAME` | your database name e.g. `adaptive_academic_db` |
+| `MONGODB_URI` | your MongoDB Atlas connection string (no quotes) |
+| `PORT` | `8000` |
+| `CORS_ORIGIN` | `*` |
+| `CLERK_PUBLISHABLE_KEY` | your `pk_test_...` key |
+| `CLERK_SECRET_KEY` | your `sk_test_...` key |
+| `GROQ_API_KEY` | your Groq API key |
+
+   > ⚠️ Do **not** wrap values in quotes — Railway reads them literally, so `"value"` becomes `"value"` with the quotes included, breaking connections like MongoDB URI
+
+7. Go to **Settings** → **Networking** → click **Generate Domain** to get your public backend URL (e.g. `https://your-app.up.railway.app`)
 
 ### Frontend → Vercel
 
 1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
 2. Click **Add New Project** → import this repo
 3. Set **Root Directory** to `devhacks-frontend`
-4. Build settings are auto-detected (Vite): Build Command `npm run build`, Output `dist`
-5. Add environment variables:
-   - `VITE_CLERK_PUBLISHABLE_KEY` = your Clerk publishable key (`pk_test_...`)
-   - `VITE_BASE_URL` = your Railway backend URL + `/api/v1` (e.g. `https://your-app.up.railway.app/api/v1`)
+4. Build settings are auto-detected (Vite): Build Command `npm run build`, Output Directory `dist`, Install Command `npm install`
+5. Add these environment variables:
+
+| Variable | Value |
+|----------|-------|
+| `VITE_CLERK_PUBLISHABLE_KEY` | your Clerk publishable key (`pk_test_...`) — **same key as `CLERK_PUBLISHABLE_KEY` in backend** |
+| `VITE_BASE_URL` | your Railway backend URL + `/api/v1` e.g. `https://your-app.up.railway.app/api/v1` |
+
 6. Click **Deploy**
 
 > **Note:** `devhacks-frontend/vercel.json` contains a rewrite rule that redirects all routes to `index.html` — this is required for React Router to work correctly on Vercel (otherwise refreshing on `/dashboard` returns a 404).
@@ -186,15 +208,22 @@ Go to Clerk Dashboard → **Configure** → **User & authentication** → **SSO 
 #### 2. Set Fallback Development Host
 Go to **Configure** → **Paths** → set **Fallback development host** to:
 ```
-https://your-frontend.vercel.app
+https://adaptive-academic-system.vercel.app
 ```
+> This tells Clerk which domain to use when auth is initiated from an external source (e.g. OAuth redirects)
 
 #### 3. Set Component Paths to Development Host
-Go to **Configure** → **Paths** → scroll to **Component paths** → for all 4 options (`<SignIn />`, `<SignUp />`, **Signing Out**, **OAuth consent**):
-- Select **"Sign-in page on development host"** (or "Page on development host")
-- Set the path to `/` (leave the field with just a forward slash)
+Go to **Configure** → **Paths** → scroll to **Component paths** → for all **4** options below:
+- `<SignIn />`
+- `<SignUp />`
+- **Signing Out**
+- **OAuth consent**
 
-> ⚠️ This is critical. Without this, Clerk redirects users to its own hosted Account Portal (`*.clerk.accounts.dev`) after OAuth, causing a 404 error on your deployed app.
+For each one:
+- Select **"Sign-in page on development host"** (or "Page on development host")
+- Set the path field to `/` (just a forward slash, nothing else)
+
+> ⚠️ **This is the most critical step.** By default, Clerk sets all these to "Account Portal" which points to `https://kind-magpie-xx.clerk.accounts.dev/...` — a Clerk-hosted page that has no knowledge of your Vercel app. After OAuth (Google/GitHub login), Clerk redirects to this URL which returns a 404. Setting all 4 to development host with `/` fixes this by redirecting back to your own domain instead.
 
 ---
 
