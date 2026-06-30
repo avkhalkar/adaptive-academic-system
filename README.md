@@ -163,6 +163,7 @@ Team10/
 │   │   ├── hooks/        # Custom hooks
 │   │   └── *.jsx         # Page components
 │   ├── .env.example      # Example environment file
+│   ├── vercel.json       # Vercel SPA routing config (rewrites all routes to index.html)
 │   └── vite.config.js    # Vite configuration
 │
 └── README.md             # This file
