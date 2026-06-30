@@ -484,7 +484,7 @@ function FocusMode() {
       </div>
 
       {/* Center Content */}
-      <div style={{ display: "grid", gridTemplateColumns: "35% 65%", height: "100%" }}>
+      <div className="focusmode-center" style={{ display: "grid", gridTemplateColumns: "35% 65%", height: "100%" }}>
 
         {/* Stopwatch Zone - Pure Focus */}
         <div style={{
@@ -951,6 +951,13 @@ function FocusMode() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
+        }
+        @media (max-width: 768px) {
+          .focusmode-center {
+            grid-template-columns: 1fr !important;
+            height: auto !important;
+            overflow-y: auto;
+          }
         }
       `}</style>
     </div>

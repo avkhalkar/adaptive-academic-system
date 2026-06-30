@@ -379,7 +379,7 @@ adaptive-academic-system/
 - **Authentication:** Clerk
 - **AI:** Groq API (Llama 3.3 70B)
 - **File Uploads:** Cloudinary
-- **Styling:** Custom CSS with glassmorphism
+- **Styling:** Custom CSS with glassmorphism, responsive design
 
 ---
 

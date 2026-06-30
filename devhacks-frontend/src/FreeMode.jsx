@@ -235,7 +235,7 @@ function FreeMode() {
         </div>
       </div>
 
-      <div className="dashboard-grid" style={{ height: "calc(100vh - 70px)", padding: "24px", gap: "24px" }}>
+      <div className="dashboard-grid freemode-body" style={{ height: "calc(100vh - 70px)", padding: "24px", gap: "24px" }}>
         
         {/* Sidebar */}
         <div className="left-panel" style={{ 
@@ -382,6 +382,12 @@ function FreeMode() {
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
+        }
+        @media (max-width: 768px) {
+          .freemode-body {
+            height: auto !important;
+            overflow-y: auto !important;
+          }
         }
       `}</style>
     </div>

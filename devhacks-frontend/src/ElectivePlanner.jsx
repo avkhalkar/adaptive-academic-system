@@ -306,13 +306,14 @@ function ElectivePlanner() {
                   </p>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div className="elective-search-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
                   <h2 style={{ margin: 0 }}>Available Electives ({profile.semester} Semester)</h2>
                   <input
                     type="text"
                     placeholder="🔍 Search course or slot..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="elective-search-input"
                     style={{
                       padding: "10px 16px",
                       borderRadius: "12px",
@@ -324,7 +325,7 @@ function ElectivePlanner() {
                     }}
                   />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginTop: "20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginTop: "20px" }}>
                   {recommendations.map(elective => (
                     <div
                       key={elective.id}
@@ -478,6 +479,9 @@ function ElectivePlanner() {
           }
           .glass-panel {
             padding: 16px !important;
+          }
+          .elective-search-input {
+            width: 100% !important;
           }
         }
       `}</style>
