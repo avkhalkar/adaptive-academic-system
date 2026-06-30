@@ -137,9 +137,64 @@ The app will be available at `http://localhost:5173` (check terminal if port var
 
 ### MongoDB Atlas (Database - FREE tier)
 1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a free cluster
-3. Click **Connect** → **Connect your application**
-4. Copy the connection string (replace `<password>` with your DB password)
+2. Sign up and click **Build a Database** → choose **Free (M0)** tier
+3. Pick a cloud provider and region → click **Create**
+4. Set a username and password for your DB user → click **Create User**
+5. Under **Network Access** → **Add IP Address** → enter `0.0.0.0/0` (allow all IPs) → make sure the **temporary** toggle is **off** → click **Confirm**
+6. Go to **Database** → click **Connect** → **Drivers** → copy the connection string
+7. Replace `<password>` with your DB user password and remove the database name from the URI — set `DB_NAME` separately in your `.env`
+
+---
+
+## 🚀 Deployment
+
+This project is deployed with the **backend on Railway** and the **frontend on Vercel**.
+
+### Backend → Railway
+
+1. Go to [railway.app](https://railway.app) and sign in with GitHub
+2. Click **New Project** → **Deploy from GitHub repo** → select this repo
+3. Once the service is created, go to **Settings** → **Source** → click **Add Root Directory** → set it to `/backend`
+4. Under **Settings** → **Deploy** → click **+ Start Command** → set it to `node server.js`
+5. Go to **Variables** and add all backend env vars:
+   - `DB_NAME`, `MONGODB_URI`, `PORT`, `CORS_ORIGIN`, `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `GROQ_API_KEY`
+   - ⚠️ Do **not** wrap values in quotes — Railway will include them literally
+6. Go to **Settings** → **Networking** → click **Generate Domain** to get your public backend URL
+
+### Frontend → Vercel
+
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click **Add New Project** → import this repo
+3. Set **Root Directory** to `devhacks-frontend`
+4. Build settings are auto-detected (Vite): Build Command `npm run build`, Output `dist`
+5. Add environment variables:
+   - `VITE_CLERK_PUBLISHABLE_KEY` = your Clerk publishable key (`pk_test_...`)
+   - `VITE_BASE_URL` = your Railway backend URL + `/api/v1` (e.g. `https://your-app.up.railway.app/api/v1`)
+6. Click **Deploy**
+
+> **Note:** `devhacks-frontend/vercel.json` contains a rewrite rule that redirects all routes to `index.html` — this is required for React Router to work correctly on Vercel (otherwise refreshing on `/dashboard` returns a 404).
+
+### Clerk Configuration for Deployment
+
+This project uses Clerk's **Development instance** (`pk_test_` keys) which works fine for demo/portfolio purposes.
+
+#### 1. Enable SSO (Social Login)
+Go to Clerk Dashboard → **Configure** → **User & authentication** → **SSO connections** → enable:
+- **GitHub** (uses shared credentials in dev — no setup needed)
+- **Google** (uses shared credentials in dev — no setup needed)
+
+#### 2. Set Fallback Development Host
+Go to **Configure** → **Paths** → set **Fallback development host** to:
+```
+https://your-frontend.vercel.app
+```
+
+#### 3. Set Component Paths to Development Host
+Go to **Configure** → **Paths** → scroll to **Component paths** → for all 4 options (`<SignIn />`, `<SignUp />`, **Signing Out**, **OAuth consent**):
+- Select **"Sign-in page on development host"** (or "Page on development host")
+- Set the path to `/` (leave the field with just a forward slash)
+
+> ⚠️ This is critical. Without this, Clerk redirects users to its own hosted Account Portal (`*.clerk.accounts.dev`) after OAuth, causing a 404 error on your deployed app.
 
 ---
 
