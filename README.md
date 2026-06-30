@@ -38,7 +38,7 @@ Create, manage, and study flashcards organized by subject. Features:
 A fullscreen distraction-blocking study session tied to a specific task. Features:
 - **Enforced fullscreen** — entering exits fullscreen counts as an interruption
 - **Tab switch detection** — switching tabs or losing window focus triggers a "Focus Locked" blocker overlay
-- **Study material upload** — drag-and-drop or select a PDF/image to display alongside the timer during the session; uploaded to Cloudinary and rendered in-app
+- **Study material upload** — drag-and-drop or select a PDF/image to display alongside the timer during the session; uploaded to the backend server and rendered in-app
 - **Smart completion logic** — if you end a session before completing 50% of the estimated task time, the task is NOT marked as completed (you get a warning)
 - **XP system** — sessions earn XP tracked in MongoDB
 - Timer tracks actual focused seconds (pauses when interrupted)
@@ -68,6 +68,55 @@ The main hub showing:
 
 ---
 
+## 🏗️ Architecture Overview
+
+```
+┌──────────────────────────┐
+│   React Frontend (Vite)  │
+│   Deployed on Vercel     │
+└────────────┬─────────────┘
+             │ login / session token
+             ▼
+┌──────────────────────────┐
+│      Clerk Auth          │
+│  (identity bridge —      │
+│   issues & verifies JWT) │
+└────────────┬─────────────┘
+             │ verified request
+             ▼
+┌──────────────────────────┐        ┌─────────────────────┐
+│  Express.js Backend      │───────►│   Groq API          │
+│  Deployed on Railway     │        │   (Llama 3.3 70B)   │
+│                          │        │   AI resume enhance │
+│                          │        └─────────────────────┘
+│                          │        ┌─────────────────────┐
+│                          │───────►│   Cloudinary        │
+└────────────┬─────────────┘        │   (file uploads)    │
+             │                      └─────────────────────┘
+             ▼
+┌──────────────────────────┐
+│   MongoDB Atlas          │
+│   (tasks, flashcards,    │
+│    XP, streaks)          │
+└──────────────────────────┘
+```
+
+**Request flow:**
+1. User logs in via Clerk on the frontend (Google/GitHub OAuth or email)
+2. Clerk issues a session token to the frontend
+3. Every API call from frontend includes this token in the `Authorization` header
+4. Express middleware verifies the token with Clerk on every protected route — unauthenticated requests are rejected
+5. Controllers query MongoDB for user data (tasks, flashcards, XP, streaks)
+6. AI resume enhancement calls Groq API **from the backend only** — the API key is never exposed to the frontend
+7. Study material uploads (Focus Mode) go to the backend server via multipart form upload and are served back to the frontend
+
+**Key design decisions:**
+- DSA problems and scheduling logic live entirely on the frontend (`localStorage`) — no backend needed for that feature
+- Elective planner uses a hardcoded IIT Dharwad course database on the frontend
+- GPA hill-climbing algorithm runs client-side — pure JavaScript, no API call
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -77,6 +126,7 @@ The main hub showing:
 - MongoDB Atlas account (or local MongoDB)
 - Clerk account (for authentication)
 - Groq account (for AI features)
+- Cloudinary account (for file uploads)
 
 ---
 
@@ -112,6 +162,14 @@ Get all your keys before setting up env files.
 3. Go to **API Keys** → click **Create API Key**
 4. Copy and use in `GROQ_API_KEY`
 
+### Cloudinary (File Uploads - FREE tier)
+1. Go to [cloudinary.com](https://cloudinary.com) and sign up
+2. On the Dashboard, copy your:
+   - **Cloud Name** → use as `CLOUDINARY_CLOUD_NAME`
+   - **API Key** → use as `CLOUDINARY_API_KEY`
+   - **API Secret** → use as `CLOUDINARY_API_SECRET`
+3. No extra configuration needed — the first upload will automatically create an `adaptive-academic-system` folder in your media library to keep files organized
+
 ---
 
 ## 🔑 Environment Setup
@@ -135,6 +193,9 @@ Fill in the following values:
 | `CLERK_PUBLISHABLE_KEY` | Clerk public key | `pk_test_...` from Clerk Dashboard |
 | `CLERK_SECRET_KEY` | Clerk secret key | `sk_test_...` from Clerk Dashboard |
 | `GROQ_API_KEY` | Groq API key for AI | From Groq Console |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | From Cloudinary Dashboard |
+| `CLOUDINARY_API_KEY` | Cloudinary API key | From Cloudinary Dashboard |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | From Cloudinary Dashboard |
 
 ### Frontend Environment Variables
 
@@ -224,6 +285,9 @@ This project is deployed with the **backend on Railway** and the **frontend on V
 | `CLERK_PUBLISHABLE_KEY` | your `pk_test_...` key |
 | `CLERK_SECRET_KEY` | your `sk_test_...` key |
 | `GROQ_API_KEY` | your Groq API key |
+| `CLOUDINARY_CLOUD_NAME` | your Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | your Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | your Cloudinary API secret |
 
    > ⚠️ Do **not** wrap values in quotes — Railway reads them literally, so `"value"` becomes `"value"` with quotes included, breaking connections like MongoDB URI
 
@@ -314,6 +378,7 @@ adaptive-academic-system/
 - **Database:** MongoDB Atlas
 - **Authentication:** Clerk
 - **AI:** Groq API (Llama 3.3 70B)
+- **File Uploads:** Cloudinary
 - **Styling:** Custom CSS with glassmorphism
 
 ---

@@ -3,7 +3,7 @@ import fs from "fs"; //file system
 
 //user--->server(local storage)--->cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUND_NAME,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
@@ -13,7 +13,8 @@ const uploadOnCloudinary = async (localFilePath) => {
     if (!localFilePath) return null
     //upload the file
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto"
+      resource_type: "auto",
+      folder: "adaptive-academic-system"
     })
     fs.unlinkSync(localFilePath)
     //console.log("file uploaded on cloudinary :" ,response.url)
