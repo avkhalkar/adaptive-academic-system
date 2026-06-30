@@ -4,13 +4,67 @@ An intelligent academic planning and productivity platform for students, featuri
 
 ## ✨ Features
 
-- **📄 AI Resume Generator** - Create professional resumes with AI-powered text enhancement using Groq (Llama 3.3)
-- **🧠 DSA Practice Scheduler** - Daily coding practice with streak tracking, topic rotation, and contest notifications
-- **🎯 GPA Strategizer** - Plan and optimize your academic performance
-- **📚 Flashcards** - Study with interactive flashcards
-- **📅 Calendar** - Track assignments, exams, and deadlines
-- **🎓 Elective Planner** - Choose electives strategically
-- **⏱️ Focus Mode** - Distraction-free study sessions with fullscreen enforcement
+### 📄 AI Resume Generator
+Build a professional resume with a live side-by-side preview. Fill in personal info, education, work experience, skills, projects, and certifications. Click **Enhance with AI** to send all text fields through the Groq API (Llama 3.3 70B), which rewrites descriptions in a more professional, impactful tone. You can revert to your original text at any time. Export the final resume as a PDF using html2pdf.
+
+### 🧠 DSA Practice Scheduler
+A structured daily coding practice system. Every day gets a problem auto-selected based on a weekly difficulty schedule (Mon–Thu: Easy, Fri–Sat: Medium, Sunday: Hard). Problems are picked with topic rotation so you don't repeat the same category back-to-back. Features:
+- **Streak tracking** — consecutive days solved with milestone badges
+- **Weekly plan view** — see all 7 problems for the current week at a glance
+- **Hints** — context-sensitive hints based on the problem's topic (hash maps, two pointers, DFS, etc.)
+- **Skip** — get a fresh problem if you want a different one (disabled after solving)
+- **Contests tab** — links to LeetCode, Codeforces, CodeChef, and AtCoder contest pages
+- **All Problems tab** — filterable by topic and difficulty, with solved problems highlighted
+- All progress (streak, solved list, total days) stored in `localStorage` per user
+
+### 🎯 GPA Strategizer
+A multi-step wizard that calculates the exact grade required in each subject to hit your target CGPA. Steps:
+1. Enter your current semester's courses and their credits
+2. Enter your semester number, previous credits earned, current CGPA, and target CGPA
+3. Rate each subject as Easy/Medium/Hard and set the competition level (Low/Medium/High)
+4. The optimizer runs a **hill-climbing algorithm** that respects a grade hierarchy constraint (Easy ≥ Medium ≥ Hard) and factors in competition levels, then outputs the minimum grade needed per subject (AA/AB/BB/BC etc.)
+- Handles edge cases: target CGPA mathematically unreachable (shows max possible), target already exceeded (tells you you're underestimating yourself)
+- Auto-pulls your enrolled subjects from context if already set up
+
+### 📚 Flashcards
+Create, manage, and study flashcards organized by subject. Features:
+- Create cards with a question, answer, subject, and difficulty (Easy/Medium/Hard)
+- Browse your card collection filtered by subject
+- **Quiz Mode** — 3D flip-card animation, tap to reveal answer, then rate yourself as "Got It" or "Need Practice"
+- Progress bar during quiz, session summary showing mastered vs. still-learning count
+- Cards stored in MongoDB, synced to your account across devices
+
+### ⏱️ Focus Mode
+A fullscreen distraction-blocking study session tied to a specific task. Features:
+- **Enforced fullscreen** — entering exits fullscreen counts as an interruption
+- **Tab switch detection** — switching tabs or losing window focus triggers a "Focus Locked" blocker overlay
+- **Study material upload** — drag-and-drop or select a PDF/image to display alongside the timer during the session; uploaded to Cloudinary and rendered in-app
+- **Smart completion logic** — if you end a session before completing 50% of the estimated task time, the task is NOT marked as completed (you get a warning)
+- **XP system** — sessions earn XP tracked in MongoDB
+- Timer tracks actual focused seconds (pauses when interrupted)
+
+### 🎓 Elective Planner
+Helps students choose electives that fit their schedule and career goals. Enter your branch, career interests (e.g. AI/ML, Web Dev, Finance), and which core course slots are already taken. The planner:
+- Filters electives from a built-in IIT Dharwad database (odd + even semester)
+- Scores each elective based on career match and branch relevance
+- Shows slot conflicts with your core courses
+- Manual slot conflict checker for verifying any elective manually
+
+### 📅 Calendar
+Visual calendar to track scheduled tasks, assignments, and deadlines. Integrated with the task system — tasks with scheduled dates appear on the calendar.
+
+### 📊 Dashboard & Analytics
+The main hub showing:
+- **Academic Health Score** (0–100) — calculated from study patterns, streaks, and session consistency
+- **Weekly stats** — bar chart of study minutes, sessions, and XP earned over the last 7 days
+- **Today's tasks** — prioritized list with urgency scores, estimated time, status, and a direct link to Focus Mode for each task
+- **Level & XP progress** — gamified progression system
+
+### 🏃 Subjects & Task Management
+- Add subjects with custom names, icons, and colors
+- Tasks are auto-generated daily based on your subjects or created manually
+- Each task has priority, estimated minutes, scheduled date, and completion percentage
+- Task status transitions: Not Started → In Progress → Completed
 
 ---
 
@@ -19,55 +73,87 @@ An intelligent academic planning and productivity platform for students, featuri
 ### Prerequisites
 
 - Node.js 18+
-- npm 
+- npm
 - MongoDB Atlas account (or local MongoDB)
 - Clerk account (for authentication)
 - Groq account (for AI features)
 
 ---
 
-## 🔑 API Keys & Environment Setup
+## 🔗 Getting Free API Keys
 
-### Backend Environment Variables
+Get all your keys before setting up env files.
 
-Create a `.env` file in the `backend/` folder by copying `.env.example`:
+### MongoDB Atlas (Database - FREE tier)
+1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas) and sign up
+2. Click **Build a Database** → choose **Free (M0)** tier → pick a cloud provider and region → click **Create**
+3. Set a **username** and **password** for your DB user → click **Create User**
+4. Under **Network Access** in the left sidebar → click **Add IP Address**
+   - Enter `0.0.0.0/0` in the Access List Entry field (allows connections from any IP — fine for development/demo, avoid in production)
+   - Make sure the **"This entry is temporary"** toggle is **OFF**
+   - Click **Confirm**
+5. Go to **Database** in the left sidebar → click **Connect** → **Drivers** → copy the connection string
+6. Your connection string looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net`
+   - Replace `<password>` with your DB user password
+   - Do **not** include the database name in the URI — set it separately as `DB_NAME` in your `.env`
 
-```bash
-cd backend
-cp .env.example .env
-```
+### Clerk (Authentication - FREE tier)
+1. Go to [clerk.com](https://clerk.com) and sign up
+2. Click **Create application** → name it → enable **Google** and **GitHub** under SSO connections
+3. Go to **Configure** → **API Keys** → copy:
+   - **Publishable Key** (`pk_test_...`) → use as `CLERK_PUBLISHABLE_KEY` in backend and `VITE_CLERK_PUBLISHABLE_KEY` in frontend (same key for both)
+   - **Secret Key** (`sk_test_...`) → use as `CLERK_SECRET_KEY` in backend only
+4. For local development, Clerk auto-detects `localhost` as the dev host — no extra configuration needed
+5. For deployed environments, see the **Clerk Configuration for Deployment** section below
 
-Fill in the following values:
-
-| Variable | Description | Where to Get |
-|----------|-------------|--------------|
-| `DB_NAME` | Your MongoDB database name | Choose any name, e.g., `academic_system_db` |
-| `MONGODB_URI` | MongoDB connection string | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) → Create Cluster → Connect → Get URI |
-| `PORT` | Backend server port | Use `8000` |
-| `CORS_ORIGIN` | Allowed frontend origin | Use `*` for local dev; set to your Vercel URL in production |
-| `CLERK_PUBLISHABLE_KEY` | Clerk public key | [Clerk Dashboard](https://dashboard.clerk.com) → Your App → API Keys |
-| `CLERK_SECRET_KEY` | Clerk secret key | [Clerk Dashboard](https://dashboard.clerk.com) → Your App → API Keys |
-| `GROQ_API_KEY` | Groq API key for AI | [Groq Console](https://console.groq.com) → API Keys → Create (FREE) |
-
-### Frontend Environment Variables
-
-Create a `.env` file in the `devhacks-frontend/` folder by copying `.env.example`:
-
-```bash
-cd devhacks-frontend
-cp .env.example .env
-```
-
-Fill in the following values:
-
-| Variable | Description | Where to Get |
-|----------|-------------|--------------|
-| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk public key (same as backend) | [Clerk Dashboard](https://dashboard.clerk.com) → Your App → API Keys |
-| `VITE_BASE_URL` | Backend API URL | Use `http://localhost:8000/api/v1` for local development |
+### Groq API (AI Enhancement - FREE)
+1. Go to [console.groq.com](https://console.groq.com)
+2. Sign up / Log in
+3. Go to **API Keys** → click **Create API Key**
+4. Copy and use in `GROQ_API_KEY`
 
 ---
 
-## 📦 Installation
+## 🔑 Environment Setup
+
+### Backend Environment Variables
+
+Create a `.env` file in the `backend/` folder:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Fill in the following values:
+
+| Variable | Description | Value |
+|----------|-------------|-------|
+| `DB_NAME` | MongoDB database name | Choose any name e.g. `academic_system_db` |
+| `MONGODB_URI` | MongoDB connection string | From MongoDB Atlas → Connect → Drivers |
+| `PORT` | Backend server port | `8000` |
+| `CORS_ORIGIN` | Allowed frontend origin | `*` for local dev; your Vercel URL in production |
+| `CLERK_PUBLISHABLE_KEY` | Clerk public key | `pk_test_...` from Clerk Dashboard |
+| `CLERK_SECRET_KEY` | Clerk secret key | `sk_test_...` from Clerk Dashboard |
+| `GROQ_API_KEY` | Groq API key for AI | From Groq Console |
+
+### Frontend Environment Variables
+
+Create a `.env` file in the `devhacks-frontend/` folder:
+
+```bash
+cp devhacks-frontend/.env.example devhacks-frontend/.env
+```
+
+Fill in the following values:
+
+| Variable | Description | Value |
+|----------|-------------|-------|
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk public key (same as backend) | `pk_test_...` from Clerk Dashboard |
+| `VITE_BASE_URL` | Backend API URL | `http://localhost:8000/api/v1` for local dev |
+
+---
+
+## 📦 Installation & Running Locally
 
 ### 1. Clone the repository
 
@@ -76,35 +162,19 @@ git clone https://github.com/avkhalkar/adaptive-academic-system.git
 cd adaptive-academic-system
 ```
 
-### 2. Set up environment files
-
-Copy the example files and fill in your API keys (see the **API Keys & Environment Setup** section above):
+### 2. Install dependencies
 
 ```bash
 # Backend
-cp backend/.env.example backend/.env
-
-# Frontend
-cp devhacks-frontend/.env.example devhacks-frontend/.env
-```
-
-> Fill in all values before proceeding — the app won't work without valid keys
-
-### 3. Install Backend Dependencies
-
-```bash
 cd backend
 npm install
-```
 
-### 4. Install Frontend Dependencies
-
-```bash
+# Frontend
 cd ../devhacks-frontend
 npm install
 ```
 
-### 5. Run the application
+### 3. Run the application
 
 > ⚠️ **Start the backend first** — the frontend makes API calls on load, so if the backend isn't running you'll see errors
 
@@ -114,7 +184,7 @@ cd backend
 npm run dev
 ```
 
-Wait until you see `MongoDB connected` and `Server running on port 8000` in the terminal, then verify the backend is live by visiting:
+Wait until you see `MongoDB connected` and `Server running on port 8000`, then verify by visiting:
 ```
 http://localhost:8000/api/v1/healthcheck
 ```
@@ -130,40 +200,7 @@ The app will be available at `http://localhost:5173`
 
 ---
 
-## 🔗 Getting Free API Keys
-
-### Groq API (AI Enhancement - FREE)
-1. Go to [console.groq.com](https://console.groq.com)
-2. Sign up / Log in
-3. Go to **API Keys**
-4. Click **Create API Key**
-5. Copy and use in `GROQ_API_KEY`
-
-### Clerk (Authentication - FREE tier)
-1. Go to [clerk.com](https://clerk.com) and sign up
-2. Click **Create application** → name it → enable **Google** and **GitHub** under SSO connections
-3. Go to **Configure** → **API Keys** → copy:
-   - **Publishable Key** (`pk_test_...`) → use as `CLERK_PUBLISHABLE_KEY` in backend and `VITE_CLERK_PUBLISHABLE_KEY` in frontend (same key for both)
-   - **Secret Key** (`sk_test_...`) → use as `CLERK_SECRET_KEY` in backend only
-4. For local development, Clerk auto-detects `localhost` as the dev host — no extra configuration needed
-5. For deployed environments, see the **Clerk Configuration for Deployment** section below
-
-### MongoDB Atlas (Database - FREE tier)
-1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas) and sign up
-2. Click **Build a Database** → choose **Free (M0)** tier → pick a cloud provider and region → click **Create**
-3. Set a **username** and **password** for your DB user → click **Create User**
-4. Under **Network Access** in the left sidebar → click **Add IP Address**
-   - Enter `0.0.0.0/0` in the Access List Entry field (this allows connections from any IP — fine for development/demo, avoid in production)
-   - Make sure the **"This entry is temporary"** toggle is **OFF**
-   - Click **Confirm**
-5. Go to **Database** in the left sidebar → click **Connect** → **Drivers** → copy the connection string
-6. Your connection string looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net`
-   - Replace `<password>` with your DB user password
-   - Do **not** include the database name in the URI — set it separately as `DB_NAME` in your `.env`
-
----
-
-## 🚀 Deployment
+## 🌐 Deployment
 
 This project is deployed with the **backend on Railway** and the **frontend on Vercel**.
 
@@ -175,7 +212,7 @@ This project is deployed with the **backend on Railway** and the **frontend on V
    > This tells Railway to look inside the `backend/` folder for `package.json` and run all commands from there
 4. Under **Settings** → **Build** → set **Custom Build Command** to `npm install`
 5. Under **Settings** → **Deploy** → click **+ Start Command** → set it to `node server.js`
-   > Use `node` directly, not `nodemon` — nodemon is for development only (file watching has no use in production)
+   > Use `node` directly, not `nodemon` — nodemon is for development only
 6. Go to **Variables** and add all backend env vars:
 
 | Variable | Value |
@@ -188,7 +225,7 @@ This project is deployed with the **backend on Railway** and the **frontend on V
 | `CLERK_SECRET_KEY` | your `sk_test_...` key |
 | `GROQ_API_KEY` | your Groq API key |
 
-   > ⚠️ Do **not** wrap values in quotes — Railway reads them literally, so `"value"` becomes `"value"` with the quotes included, breaking connections like MongoDB URI
+   > ⚠️ Do **not** wrap values in quotes — Railway reads them literally, so `"value"` becomes `"value"` with quotes included, breaking connections like MongoDB URI
 
 7. Go to **Settings** → **Networking** → click **Generate Domain** to get your public backend URL (e.g. `https://your-app.up.railway.app`)
 
@@ -207,11 +244,13 @@ This project is deployed with the **backend on Railway** and the **frontend on V
 
 6. Click **Deploy**
 
-> **Note:** `devhacks-frontend/vercel.json` contains a rewrite rule that redirects all routes to `index.html` — this is required for React Router to work correctly on Vercel (otherwise refreshing on `/dashboard` returns a 404).
+> **Note:** `devhacks-frontend/vercel.json` contains a rewrite rule that redirects all routes to `index.html` — required for React Router to work on Vercel (otherwise refreshing on `/dashboard` returns 404).
 
 ### Clerk Configuration for Deployment
 
 This project uses Clerk's **Development instance** (`pk_test_` keys) which works fine for demo/portfolio purposes.
+
+> **Why not a Production instance?** Clerk's production instances require a custom domain — they don't accept free subdomains like `*.vercel.app`. Since this project is deployed on Vercel without a custom domain, the development instance is the only option.
 
 #### 1. Enable SSO (Social Login)
 Go to Clerk Dashboard → **Configure** → **User & authentication** → **SSO connections** → enable:
@@ -243,7 +282,7 @@ For each one:
 ## 📁 Project Structure
 
 ```
-Team10/
+adaptive-academic-system/
 ├── backend/              # Express.js API server
 │   ├── src/
 │   │   ├── controllers/  # Route handlers
@@ -282,5 +321,3 @@ Team10/
 ## 👥 Team
 
 **Team 10** - DevHack 7.0
-
-
