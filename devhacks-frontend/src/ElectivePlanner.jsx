@@ -103,8 +103,8 @@ function ElectivePlanner() {
 
   // Rendering logic for steps...
   return (
-    <div className="dashboard-container" style={{ padding: "20px" }}>
-      <div className="dashboard-overlay" style={{ padding: "40px", backdropFilter: "blur(20px)" }}>
+    <div className="dashboard-container" style={{ padding: "20px", overflowX: "hidden" }}>
+      <div className="dashboard-overlay" style={{ padding: "40px", backdropFilter: "blur(20px)", maxWidth: "100%", boxSizing: "border-box" }}>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -461,7 +461,7 @@ function ElectivePlanner() {
         }
         @media (max-width: 768px) {
           .dashboard-overlay {
-            padding: 16px !important;
+            padding: 12px !important;
           }
           .dashboard-overlay h1 {
             font-size: 22px !important;

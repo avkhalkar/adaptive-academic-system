@@ -515,6 +515,11 @@ function FlashcardsPage() {
           .card-item p {
             font-size: 14px !important;
           }
+          /* Collapse 2-column form and summary grids */
+          div[style*="gridTemplateColumns: \"1fr 1fr\""],
+          div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>

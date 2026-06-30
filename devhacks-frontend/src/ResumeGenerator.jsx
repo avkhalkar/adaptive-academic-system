@@ -627,6 +627,10 @@ function ResumeGenerator() {
           .dashboard-container {
             padding: 12px !important;
           }
+          .resume-form > div > div[style*="grid-template-columns"],
+          .resume-form > div > div > div[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
         </div>

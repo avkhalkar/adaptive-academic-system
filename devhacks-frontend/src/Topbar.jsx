@@ -249,7 +249,6 @@ function Topbar() {
             }}
             className="hamburger-btn"
             style={{
-              display: "none",
               width: "40px",
               height: "40px",
               borderRadius: "10px",
@@ -417,6 +416,9 @@ function Topbar() {
         @keyframes slideInRight {
           from { transform: translateX(100%); }
           to { transform: translateX(0); }
+        }
+        .hamburger-btn {
+          display: none;
         }
         .nav-link:hover {
           color: #6366f1 !important;

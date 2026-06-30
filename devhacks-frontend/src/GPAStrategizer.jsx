@@ -680,6 +680,10 @@ function GPAStrategizer() {
             flex-direction: column !important;
             gap: 24px !important;
           }
+          /* Course row: collapse to single column on mobile */
+          .gpa-card div[style*="grid-template-columns: 1fr 120px 50px"] {
+            grid-template-columns: 1fr !important;
+          }
           /* Reduce large SGPA font on mobile */
           .gpa-card div[style*="font-size: 64px"] {
             font-size: 48px !important;

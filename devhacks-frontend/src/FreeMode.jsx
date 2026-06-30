@@ -169,20 +169,22 @@ function FreeMode() {
   const currentStyle = styles[theme];
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", background: currentStyle.bg, color: currentStyle.text, transition: "background 0.3s" }}>
+    <div className="freemode-root" style={{ height: "100vh", overflow: "hidden", background: currentStyle.bg, color: currentStyle.text, transition: "background 0.3s" }}>
       {/* Header */}
-      <div style={{ 
-        padding: "16px 24px", 
-        display: "flex", 
-        justifyContent: "space-between", 
+      <div style={{
+        padding: "12px 16px",
+        display: "flex",
+        justifyContent: "space-between",
         alignItems: "center",
+        flexWrap: "wrap",
+        gap: "8px",
         borderBottom: currentStyle.panelBorder
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <h2 style={{ fontSize: "18px", fontWeight: "600", color: "#93c5fd" }}>Free Mode Workspace</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: "600", color: "#93c5fd", margin: 0 }}>Free Mode</h2>
           {sessionStarted && (
             <span style={{
-              fontSize: "12px",
+              fontSize: "11px",
               color: "#10b981",
               display: "flex",
               alignItems: "center",
@@ -193,20 +195,21 @@ function FreeMode() {
                 height: "6px",
                 borderRadius: "50%",
                 background: "#10b981",
-                animation: "pulse 2s infinite"
+                animation: "pulse 2s infinite",
+                flexShrink: 0
               }} />
               Session Active
             </span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
           <button
             onClick={() => setTheme(theme === "blue" ? "monochrome" : "blue")}
             style={{
               background: "transparent",
               border: `1px solid ${currentStyle.accent}40`,
               color: currentStyle.textMuted,
-              padding: "6px 12px",
+              padding: "6px 10px",
               borderRadius: "6px",
               cursor: "pointer",
               fontSize: "12px"
@@ -220,7 +223,7 @@ function FreeMode() {
               background: "rgba(239, 68, 68, 0.2)",
               border: "1px solid rgba(239, 68, 68, 0.3)",
               color: "#ef4444",
-              padding: "6px 16px",
+              padding: "6px 12px",
               borderRadius: "6px",
               cursor: "pointer",
               fontSize: "13px",
@@ -229,7 +232,7 @@ function FreeMode() {
           >
             End & Save
           </button>
-          <Link to="/dashboard" style={{ color: currentStyle.accent, textDecoration: "none", fontSize: "14px" }}>
+          <Link to="/dashboard" className="freemode-back-link" style={{ color: currentStyle.accent, textDecoration: "none", fontSize: "13px" }}>
             Back to Dashboard
           </Link>
         </div>
@@ -300,7 +303,7 @@ function FreeMode() {
         </div>
 
         {/* Workspace */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px", height: "100%" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px", minHeight: "400px" }}>
           
           {/* Timer Card */}
           <div style={{ 
@@ -384,9 +387,18 @@ function FreeMode() {
           50% { opacity: 0.5; }
         }
         @media (max-width: 768px) {
+          .freemode-root {
+            height: auto !important;
+            min-height: 100vh;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+          }
           .freemode-body {
             height: auto !important;
-            overflow-y: auto !important;
+            overflow: visible !important;
+          }
+          .freemode-back-link {
+            display: none;
           }
         }
       `}</style>

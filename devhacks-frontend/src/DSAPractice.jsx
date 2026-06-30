@@ -432,7 +432,7 @@ function DSAPractice() {
             </div>
 
             {/* Tab Navigation */}
-            <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
                 {[
                     { id: "today", label: "📅 Today's Problem", icon: "📅" },
                     { id: "week", label: "📊 Weekly Plan", icon: "📊" },
