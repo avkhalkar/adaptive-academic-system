@@ -44,7 +44,7 @@ Fill in the following values:
 | `DB_NAME` | Your MongoDB database name | Choose any name, e.g., `academic_system_db` |
 | `MONGODB_URI` | MongoDB connection string | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) → Create Cluster → Connect → Get URI |
 | `PORT` | Backend server port | Use `8000` |
-| `CORS_ORIGIN` | Frontend URL | Use `*` for development |
+| `CORS_ORIGIN` | Allowed frontend origin | Use `*` for local dev; set to your Vercel URL in production |
 | `CLERK_PUBLISHABLE_KEY` | Clerk public key | [Clerk Dashboard](https://dashboard.clerk.com) → Your App → API Keys |
 | `CLERK_SECRET_KEY` | Clerk secret key | [Clerk Dashboard](https://dashboard.clerk.com) → Your App → API Keys |
 | `GROQ_API_KEY` | Groq API key for AI | [Groq Console](https://console.groq.com) → API Keys → Create (FREE) |
@@ -72,37 +72,41 @@ Fill in the following values:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/DevHack-7-0/Team10.git
-cd Team10
+git clone https://github.com/avkhalkar/adaptive-academic-system.git
+cd adaptive-academic-system
 ```
 
-### 2. Install Backend Dependencies
+### 2. Set up environment files
+
+Copy the example files and fill in your API keys (see the **API Keys & Environment Setup** section above):
+
+```bash
+# Backend
+cp backend/.env.example backend/.env
+
+# Frontend
+cp devhacks-frontend/.env.example devhacks-frontend/.env
+```
+
+> Fill in all values before proceeding — the app won't work without valid keys
+
+### 3. Install Backend Dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Install Frontend Dependencies
+### 4. Install Frontend Dependencies
 
 ```bash
-cd devhacks-frontend
+cd ../devhacks-frontend
 npm install
 ```
 
-### 4. Set up environment files
-
-Copy the example files and fill in your API keys (see above):
-
-```bash
-# Backend
-cp backend/.env.example backend/.env
-
-# Frontend  
-cp devhacks-frontend/.env.example devhacks-frontend/.env
-```
-
 ### 5. Run the application
+
+> ⚠️ **Start the backend first** — the frontend makes API calls on load, so if the backend isn't running you'll see errors
 
 **Terminal 1 - Backend:**
 ```bash
@@ -110,13 +114,19 @@ cd backend
 npm run dev
 ```
 
+Wait until you see `MongoDB connected` and `Server running on port 8000` in the terminal, then verify the backend is live by visiting:
+```
+http://localhost:8000/api/v1/healthcheck
+```
+You should see `{ "status": "success", "message": "Router is working!" }`
+
 **Terminal 2 - Frontend:**
 ```bash
 cd devhacks-frontend
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173` (check terminal if port varies)
+The app will be available at `http://localhost:5173`
 
 ---
 
