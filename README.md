@@ -130,10 +130,13 @@ The app will be available at `http://localhost:5173` (check terminal if port var
 5. Copy and use in `GROQ_API_KEY`
 
 ### Clerk (Authentication - FREE tier)
-1. Go to [clerk.com](https://clerk.com)
-2. Sign up and create an application
-3. Go to **API Keys** in dashboard
-4. Copy **Publishable Key** and **Secret Key**
+1. Go to [clerk.com](https://clerk.com) and sign up
+2. Click **Create application** → name it → enable **Google** and **GitHub** under SSO connections
+3. Go to **Configure** → **API Keys** → copy:
+   - **Publishable Key** (`pk_test_...`) → use as `CLERK_PUBLISHABLE_KEY` in backend and `VITE_CLERK_PUBLISHABLE_KEY` in frontend (same key for both)
+   - **Secret Key** (`sk_test_...`) → use as `CLERK_SECRET_KEY` in backend only
+4. For local development, Clerk auto-detects `localhost` as the dev host — no extra configuration needed
+5. For deployed environments, see the **Clerk Configuration for Deployment** section below
 
 ### MongoDB Atlas (Database - FREE tier)
 1. Go to [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas) and sign up
