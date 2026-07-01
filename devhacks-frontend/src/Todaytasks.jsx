@@ -74,9 +74,24 @@ function Todaytasks({ tasks }) {
           const priorityStyle = getPriorityBadge(task.priority);
 
           return (
+            <TaskCard key={task.id} task={task} isCompleted={isCompleted} isInProgress={isInProgress} deadlineText={deadlineText} badgeStyle={badgeStyle} priorityStyle={priorityStyle} />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function TaskCard({ task, isCompleted, isInProgress, deadlineText, badgeStyle, priorityStyle }) {
+  const [cardHovered, setCardHovered] = useState(false);
+  const [buttonHovered, setButtonHovered] = useState(false);
+  const lifted = cardHovered && !buttonHovered;
+
+  return (
             <div
-              key={task.id}
-              className="task-item"
+              className={`task-item${lifted ? " card-hovered" : ""}`}
+              onMouseEnter={() => setCardHovered(true)}
+              onMouseLeave={() => { setCardHovered(false); setButtonHovered(false); }}
               style={{
                 flexDirection: "column",
                 alignItems: "flex-start",
@@ -156,7 +171,11 @@ function Todaytasks({ tasks }) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: "16px", width: "100%" }}>
+              <div
+                style={{ display: "flex", gap: "16px", width: "100%" }}
+                onMouseEnter={() => setButtonHovered(true)}
+                onMouseLeave={() => setButtonHovered(false)}
+              >
                 {!isCompleted ? (
                   <>
                     <HoverLink
