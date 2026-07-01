@@ -469,6 +469,16 @@ body {
   border-color: transparent;
 }
 
+.task-item:has(button:hover, a:hover) {
+  transform: none;
+  box-shadow: var(--shadow-card);
+  border-color: rgba(148, 163, 184, 0.1);
+}
+
+.task-item:has(button:hover, a:hover)::before {
+  opacity: 0;
+}
+
 .task-info h4 {
   margin: 0;
   font-size: 1.15rem;
