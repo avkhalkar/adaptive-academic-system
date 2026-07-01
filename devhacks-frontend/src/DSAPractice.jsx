@@ -432,7 +432,7 @@ function DSAPractice() {
             </div>
 
             {/* Tab Navigation */}
-            <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
+            <div className="dsa-tabs" style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
                 {[
                     { id: "today", label: "📅 Today's Problem", icon: "📅" },
                     { id: "week", label: "📊 Weekly Plan", icon: "📊" },
@@ -854,6 +854,22 @@ function DSAPractice() {
                 </div>
             </div>
         </div>
+
+        <style>{`
+          @media (max-width: 480px) {
+            .dsa-tabs button {
+              padding: 10px 14px !important;
+              font-size: 12px !important;
+            }
+          }
+          @media (max-width: 380px) {
+            .dsa-tabs button {
+              padding: 8px 10px !important;
+              font-size: 11px !important;
+              flex: 1;
+            }
+          }
+        `}</style>
     );
 }
 

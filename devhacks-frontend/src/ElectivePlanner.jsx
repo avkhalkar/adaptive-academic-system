@@ -325,7 +325,7 @@ function ElectivePlanner() {
                     }}
                   />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginTop: "20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "20px", marginTop: "20px" }}>
                   {recommendations.map(elective => (
                     <div
                       key={elective.id}
@@ -482,6 +482,21 @@ function ElectivePlanner() {
           }
           .elective-search-input {
             width: 100% !important;
+          }
+        }
+        @media (max-width: 380px) {
+          .dashboard-overlay {
+            padding: 8px !important;
+          }
+          .dashboard-overlay h1 {
+            font-size: 16px !important;
+          }
+          .glass-panel {
+            padding: 12px !important;
+          }
+          /* Core slots: 5 cols too tight at 344px, drop to 3 */
+          .glass-panel div[style*="repeat(5, 1fr)"] {
+            grid-template-columns: repeat(3, 1fr) !important;
           }
         }
       `}</style>

@@ -484,6 +484,23 @@ function Topbar() {
             height: 32px !important;
           }
         }
+        /* 344px minimum width */
+        @media (max-width: 380px) {
+          .brand-title {
+            font-size: 13px !important;
+          }
+          .topbar {
+            padding: 10px 10px !important;
+          }
+          .notification-btn, .user-profile-btn {
+            width: 28px !important;
+            height: 28px !important;
+          }
+          .hamburger-btn {
+            width: 32px !important;
+            height: 32px !important;
+          }
+        }
       `}</style>
     </>
   );

@@ -401,6 +401,14 @@ function FreeMode() {
             display: none;
           }
         }
+        @media (max-width: 380px) {
+          .freemode-root h2 {
+            font-size: 14px !important;
+          }
+          .freemode-body {
+            padding: 12px !important;
+          }
+        }
       `}</style>
     </div>
   );

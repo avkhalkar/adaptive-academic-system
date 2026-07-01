@@ -305,6 +305,22 @@ body {
   }
 }
 
+@media (max-width: 380px) {
+  .main-content {
+    padding: 6px;
+    width: 100%;
+  }
+
+  .glass-panel {
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .dashboard-container {
+    padding: 6px !important;
+  }
+}
+
 /* =========================
    GLASS PANEL - PREMIUM EFFECT
    ========================= */
